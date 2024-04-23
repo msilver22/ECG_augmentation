@@ -1,1 +1,1 @@
-# GAN for generating ECG
+# Generating ECG by GAN
