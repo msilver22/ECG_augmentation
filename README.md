@@ -1,1 +1,1 @@
-# ECG_augmentation
+# GAN for generating ECG
