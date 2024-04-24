@@ -76,7 +76,6 @@ def create_ECG_tensor_database():
     #Saving data
     torch.save(T, tensorECG_path)
     torch.save(labels, labels_path)
-    return T,labels
 
 def train_test_dataset(value_split):
 
@@ -110,3 +109,9 @@ def train_test_dataset(value_split):
         torch.save(trainlabels,trainlabels_path)
         torch.save(testlabels,testlabels_path)
         print("[LOG] Train and test set are completed.")
+
+if __name__ == "__main__":
+    create_ECG_tensor_database()
+    train_test_dataset()
+    
+    
