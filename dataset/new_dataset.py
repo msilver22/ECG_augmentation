@@ -8,12 +8,12 @@ from torch import Tensor
 from tqdm import tqdm
 import os
 
-tensorECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/tensorECG.pt'
-labels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/labels.pt'
-trainECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/trainECG.pt'
-trainlabels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/trainlabels.pt'
-testECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/testECG.pt'
-testlabels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/testlabels.pt'
+tensorECG_path = '/tensorECG.pt'
+labels_path = '/labels.pt'
+trainECG_path = '/trainECG.pt'
+trainlabels_path = '/trainlabels.pt'
+testECG_path = '/testECG.pt'
+testlabels_path = '/testlabels.pt'
 
 def create_ECG_tensor(n_record):
     #ECG pre-process
@@ -110,15 +110,3 @@ def train_test_dataset(value_split):
         torch.save(trainlabels,trainlabels_path)
         torch.save(testlabels,testlabels_path)
         print("[LOG] Train and test set are completed.")
-
-
-
-#Example of usage
-if os.path.exists(tensorECG_path) and os.path.exists(labels_path):
-        T = torch.load(tensorECG_path)
-        labels = torch.load(labels_path)
-print(T.shape,labels.shape)
-
-T = T.reshape(10*4217,1,8192)
-labels = labels.reshape(10*4217,1)
-print(T.shape,labels.shape)
