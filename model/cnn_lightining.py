@@ -10,14 +10,14 @@ import torch.nn as nn
 import torchmetrics
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics import F1Score
-import config as cfg
+import dataset.config as cfg
 
-tensorECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/tensorECG.pt'
-labels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/labels.pt'
-trainECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/trainECG.pt'
-trainlabels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/trainlabels.pt'
-testECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/testECG.pt'
-testlabels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/testlabels.pt'
+tensorECG_path = '/tensorECG.pt'
+labels_path = '/labels.pt'
+trainECG_path = '/trainECG.pt'
+trainlabels_path = '/trainlabels.pt'
+testECG_path = '/testECG.pt'
+testlabels_path = '/testlabels.pt'
 
 validation_split = 0.1
 device = torch.device("mps" if torch.has_mps else "cpu")
