@@ -5,12 +5,12 @@ import pytorch_lightning as pl
 from cnn_lightining import ECGDataModule,CNN_ecg
 import matplotlib.pyplot as plt
 
-tensorECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/tensorECG.pt'
-labels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/labels.pt'
-trainECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/trainECG.pt'
-trainlabels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/trainlabels.pt'
-testECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/testECG.pt'
-testlabels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/testlabels.pt'
+tensorECG_path = '/tensorECG.pt'
+labels_path = '/labels.pt'
+trainECG_path = '/trainECG.pt'
+trainlabels_path = '/trainlabels.pt'
+testECG_path = '/testECG.pt'
+testlabels_path = '/testlabels.pt'
 
 def train(name, datamodule, model):
     """
@@ -22,14 +22,14 @@ def train(name, datamodule, model):
         model (pl.LightningModule): The model to be trained.
     """
 
-    tb_logger = TensorBoardLogger("/Users/silver22/Documents/AI trends/lightning_logs", name=name)
+    tb_logger = TensorBoardLogger("/lightning_logs", name=name)
     callbacks = [TQDMProgressBar(refresh_rate=10)]
 
     trainer = pl.Trainer(
         max_epochs=3,
         callbacks=callbacks,
         logger=tb_logger,
-        default_root_dir="/Users/silver22/Documents/AI trends",
+        default_root_dir="/.",
     )
 
     trainer.fit(model, datamodule)
