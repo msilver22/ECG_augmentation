@@ -1,4 +1,4 @@
-# MNIST GAN with PyTorch Lightning
+# GAN with PyTorch Lightning
 
 Here we explore the power of Generative Adversarial Networks (GANs) to generate handwritten digits mimicking the MNIST dataset. This repository contains two main files that utilize PyTorch Lightning, making the model more modular and easier to maintain.
 
