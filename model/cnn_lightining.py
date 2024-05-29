@@ -2,22 +2,21 @@ import torch
 from cnn_model import CNNModel,CNNModelConfig
 from torch.utils.data import DataLoader, random_split, Dataset
 import pytorch_lightning as pl
-import h5py
-import numpy as np
-from torch import Tensor
-from torchvision import transforms
 import torch.nn as nn
 import torchmetrics
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics import F1Score
-import dataset.config as cfg
+import config as cfg
+from pytorch_lightning.loggers import TensorBoardLogger
+from pytorch_lightning.callbacks.progress import TQDMProgressBar
+import matplotlib.pyplot as plt
 
-tensorECG_path = '/tensorECG.pt'
-labels_path = '/labels.pt'
-trainECG_path = '/trainECG.pt'
-trainlabels_path = '/trainlabels.pt'
-testECG_path = '/testECG.pt'
-testlabels_path = '/testlabels.pt'
+tensorECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/tensorECG.pt'
+labels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/labels.pt'
+trainECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/trainECG.pt'
+trainlabels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/trainlabels.pt'
+testECG_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/testECG.pt'
+testlabels_path = '/Users/silver22/Documents/AI trends/data/torch_dataset/testlabels.pt'
 
 validation_split = 0.1
 device = torch.device("mps" if torch.has_mps else "cpu")
@@ -57,7 +56,7 @@ class ECGDataModule(pl.LightningDataModule):
         self.train_data_path = train_data_path
         self.train_labels_path = train_labels_path
         self.test_data_path = test_data_path
-        self.test_labels_path = train_labels_path
+        self.test_labels_path = test_labels_path
 
     def prepare_data(self):
         pass
@@ -99,13 +98,13 @@ class ECGDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(
-            self.data_test, shuffle=False, batch_size=self.batch_size, num_workers=0
+            self.data_test, shuffle=True, batch_size=self.batch_size, num_workers=0
         )
 
     def predict_dataloader(self):
         return DataLoader(
             self.data_prediction,
-            shuffle=False,
+            shuffle=True,
             batch_size=self.batch_size,
             num_workers=0,
         )
@@ -213,3 +212,63 @@ class CNN_ecg(pl.LightningModule):
         inputs = inputs.to(device)
         probabilities = self.cnn(inputs)
         return torch.round(probabilities)
+    
+
+def train(name, datamodule, model: CNN_ecg):
+    """
+    Trains a PyTorch Lightning model using the specified data module and logs the training process to TensorBoard.
+
+    Parameters:
+        name (str): A unique name for the training session.
+        datamodule (pl.LightningDataModule): An instance of a LightningDataModule.
+        model (pl.LightningModule): The model to be trained.
+    """
+
+    tb_logger = TensorBoardLogger("/Users/silver22/Documents/AI trends/lightning_logs", name=name)
+    callbacks = [TQDMProgressBar(refresh_rate=10)]
+
+    trainer = pl.Trainer(
+        max_epochs=50,
+        callbacks=callbacks,
+        logger=tb_logger,
+        default_root_dir="/Users/silver22/Documents/AI trends/codes",
+    )
+
+    trainer.fit(model, datamodule)
+    torch.save(model.cnn.state_dict(), 'weights.pth')
+    
+
+def main():
+    ecg_datamodule = ECGDataModule(
+        train_data_path=trainECG_path,
+        train_labels_path=trainlabels_path,
+        test_data_path=testECG_path,
+        test_labels_path=testlabels_path,
+        batch_size=100
+    )
+
+    cnn_model = CNN_ecg(
+        lr=0.0001,
+    )
+
+    train(
+        name="CNN",
+        datamodule=ecg_datamodule,
+        model=cnn_model,
+    )
+
+    f1_scores_global = cnn_model.epoch_f1_scores
+    plot_epochs = range(0, len(f1_scores_global))
+    f1_scores = f1_scores_global
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(plot_epochs, f1_scores, "-o", label="Validation F1 Score", color="blue")
+    plt.title("F1 Score over Epochs For CNN")
+    plt.xlabel("Epoch")
+    plt.ylabel("F1 Score")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+if __name__ == '__main__':
+    main()
