@@ -8,7 +8,7 @@ Here we represent two portions of an ecg, one of which is in Atrail-Fibrillation
 
 ![ecg](https://github.com/msilver22/ECG_augmentation/blob/422034cd2c5f2d9d03d519c13268ef90a4ac31a3/images/ecg_example.png)
 
-## [Model](https://github.com/msilver22/ECG_augmentation/tree/7cc301aa3ce5ea835c23c731d1771d020179a549/model)
+## [Detection-Model](https://github.com/msilver22/ECG_augmentation/tree/7cc301aa3ce5ea835c23c731d1771d020179a549/model)
 
 To do detection task, we use Residual Convolutional NN to analyze 8192-samples ECGs ( 1 = atrial fibrillation).
 
