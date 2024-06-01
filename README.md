@@ -9,5 +9,5 @@ Here we represent two portions of an ecg, one of which is in Atrail-Fibrillation
 
 ## [Model](https://github.com/msilver22/ECG_augmentation/tree/7cc301aa3ce5ea835c23c731d1771d020179a549/model)
 
-To do detection task, we use Residual Convolutional NN to analyze 8192-samples ECGs in a classification task ( 1 = atrial fibrillation).
+To do \textbf{detection task}, we use Residual Convolutional NN to analyze 8192-samples ECGs in a classification task ( 1 = atrial fibrillation).
 We get around 0.8 test accuracy.
