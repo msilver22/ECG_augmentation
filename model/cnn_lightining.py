@@ -36,7 +36,7 @@ class ECG_dataset(Dataset):
         return len(self.labels)
 
     def __getitem__(self,i):
-        sample = self.data[i,:,:]
+        sample = self.data[i,:]
         label = self.labels[i]
         return sample, label
     
@@ -116,18 +116,19 @@ class CNN_ecg(pl.LightningModule):
     def __init__(self, lr):
         super(CNN_ecg, self).__init__()
 
-        self.cnn = CNNModel(CNNModelConfig(input_size=cfg.WINDOW_SIZE))
-
-
-        self.class_loss = nn.BCELoss()
-        self.accuracy = torchmetrics.classification.Accuracy(
-            task="binary", num_classes=2
-        )
-
         self.save_hyperparameters()
         self.lr = lr
         self.sched_factor = 0.1
         self.sched_patience = 8
+
+        #network
+        self.cnn = CNNModel(CNNModelConfig(input_size=cfg.WINDOW_SIZE))
+
+        #loss
+        self.class_loss = nn.BCELoss()
+        self.accuracy = torchmetrics.classification.Accuracy(
+            task="binary", num_classes=2
+        )
 
         self.f1_score = F1Score(num_classes=2, average="macro", task="binary")
         self.epoch_f1_scores = []
@@ -135,20 +136,6 @@ class CNN_ecg(pl.LightningModule):
     def forward(self, x):
         out = self.cnn(x)
         return out
-
-    def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        scheduler = ReduceLROnPlateau(
-            optimizer,
-            mode="min",
-            factor=self.sched_factor,
-            patience=self.sched_patience,
-        )
-        return {
-            "optimizer": optimizer,
-            "lr_scheduler": scheduler,
-            "monitor": "val_loss",
-        }
 
     def training_step(self, data):
         x, labels = data
@@ -213,22 +200,27 @@ class CNN_ecg(pl.LightningModule):
         probabilities = self.cnn(inputs)
         return torch.round(probabilities)
     
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
+        scheduler = ReduceLROnPlateau(
+            optimizer,
+            mode="min",
+            factor=self.sched_factor,
+            patience=self.sched_patience,
+        )
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": scheduler,
+            "monitor": "val_loss",
+        }
+    
 
 def train(name, datamodule, model: CNN_ecg):
-    """
-    Trains a PyTorch Lightning model using the specified data module and logs the training process to TensorBoard.
-
-    Parameters:
-        name (str): A unique name for the training session.
-        datamodule (pl.LightningDataModule): An instance of a LightningDataModule.
-        model (pl.LightningModule): The model to be trained.
-    """
-
     tb_logger = TensorBoardLogger("/Users/silver22/Documents/AI trends/lightning_logs", name=name)
     callbacks = [TQDMProgressBar(refresh_rate=10)]
 
     trainer = pl.Trainer(
-        max_epochs=50,
+        max_epochs=10,
         callbacks=callbacks,
         logger=tb_logger,
         default_root_dir="/Users/silver22/Documents/AI trends/codes",
@@ -244,7 +236,7 @@ def main():
         train_labels_path=trainlabels_path,
         test_data_path=testECG_path,
         test_labels_path=testlabels_path,
-        batch_size=100
+        batch_size=500
     )
 
     cnn_model = CNN_ecg(
