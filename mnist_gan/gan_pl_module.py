@@ -1,14 +1,13 @@
 import os
-
 import lightning as L
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import MNIST
+import matplotlib.pyplot as plt
 
 PATH_DATASETS = os.environ.get("PATH_DATASETS", ".")
 BATCH_SIZE = 64
@@ -129,14 +128,12 @@ class GAN(L.LightningModule):
         self.generator = Generator(in_features=self.latent_dim, out_features=784)
         self.discriminator = Discriminator(in_features=784,out_features=1)
 
-        self.fixed_z = np.random.uniform(-1, 1, size=(16, self.latent_dim))
-        self.fixed_z = torch.from_numpy(self.fixed_z).float().to(device)          
-        self.fixed_samples = []
-
         # loss
         self.loss_fn = nn.BCEWithLogitsLoss()
-        #self.d_losses = []
-        #self.g_losses = []
+        self.training_step_outputs_d = []
+        self.training_step_outputs_g = []
+        self.d_losses = []
+        self.g_losses = []
 
     def forward(self, z):
         return self.generator(z)
@@ -225,12 +222,21 @@ class GAN(L.LightningModule):
         optimizer_g.zero_grad()
         self.untoggle_optimizer(optimizer_g)
 
+        self.training_step_outputs_d.append(d_loss)
+        self.training_step_outputs_g.append(g_loss)
+    
+    def on_train_epoch_end(self):
+        d_loss_epoch = torch.stack(self.training_step_outputs_d).mean()
+        g_loss_epoch = torch.stack(self.training_step_outputs_g).mean()
+        self.d_losses.append(d_loss_epoch.item())
+        self.g_losses.append(g_loss_epoch.item())
+        self.training_step_outputs_d.clear()  # free memory
+        self.training_step_outputs_g.clear()
+
     def configure_optimizers(self):
-        print("b1:", self.b1, "b2:", self.b2)  
         lr = self.lr
         b1 = self.b1
         b2 = self.b2
-
         opt_g = torch.optim.Adam(self.generator.parameters(), lr=lr, betas=(b1, b2))
         opt_d = torch.optim.Adam(self.discriminator.parameters(), lr=lr, betas=(b1, b2))
         return [opt_g, opt_d], []
@@ -240,12 +246,26 @@ def main():
     dm = MNISTDataModule()
     model = GAN()
     trainer = L.Trainer(
-    accelerator="auto",
-    devices=1,
-    max_epochs=50,
+        accelerator="auto",
+        devices=1,
+        max_epochs=50,
     )
     trainer.fit(model, dm)
     torch.save(model.generator.state_dict(), 'generator_weights.pth')
+    print("[LOG] Generator weights saved.")
+    d_losses = model.d_losses
+    g_losses = model.g_losses
+    plot_epochs = range(0, len(g_losses))
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(plot_epochs, d_losses, "-o", label="Discriminator loss", color="blue")
+    plt.plot(plot_epochs, g_losses, "-o", label="Generator loss", color="orange")
+    plt.title("Loss functions over Epochs")
+    plt.xlabel("Epoch")
+    plt.ylabel("BCE Loss")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 if __name__ == '__main__':
     main()
