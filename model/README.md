@@ -4,7 +4,7 @@
 
 It contains the torch.nn module
 
-## cnn_lightininh 
+## cnn_lightining.py 
 
 It contains the pytorch lightning module
 
