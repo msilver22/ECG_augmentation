@@ -1,4 +1,4 @@
-# Generating ECG by GAN
+# Generating ECG by GAN (trying to)
 
 ## [Dataset](https://github.com/msilver22/ECG_augmentation/tree/7cc301aa3ce5ea835c23c731d1771d020179a549/dataset)
 
