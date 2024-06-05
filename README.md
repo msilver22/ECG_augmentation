@@ -12,4 +12,4 @@ Here we represent two portions of an ecg, one of which is in Atrail-Fibrillation
 
 To do detection task, we use Residual Convolutional NN to analyze 8192-samples ECGs ( 1 = atrial fibrillation).
 
-We get around 0.8 test accuracy.
+We get around 0.95 test accuracy.
