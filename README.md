@@ -13,3 +13,16 @@ Here we represent two portions of an ecg, one of which is in Atrail-Fibrillation
 To do detection task, we use Residual Convolutional NN to analyze 8192-samples ECGs ( 1 = atrial fibrillation).
 
 We get around 0.95 test accuracy.
+
+## [Augmentation](https://github.com/msilver22/ECG_augmentation/tree/cc67430184efb68e2f7dde1983c31646b7157e58/augmentation)
+
+We use two techniques to augment an ECG:
+- Flipping 
+- Permutating
+
+## [GAN](https://github.com/msilver22/ECG_augmentation/tree/main/ECG_gan)
+We experiment GAN with several architecture for the generator/discriminator. The best results (not so good) are obtained using a BiLSTM generator and a CNN discriminator.
+
+Here we represent the losses for the GAN and an example of generated ECG.
+
+
