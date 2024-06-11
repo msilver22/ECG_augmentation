@@ -23,7 +23,7 @@ We use two techniques to augment an ECG:
 ## [GAN](https://github.com/msilver22/ECG_augmentation/tree/main/ECG_gan)
 We experiment GAN with several architecture for the generator/discriminator. The best results (not so good) are obtained using a BiLSTM generator and a CNN discriminator.
 
-Here we represent the losses for the GAN and an example of generated ECG.
+Here we represent the losses for the GAN and an example of generated ECG after 100 epochs.
 
 ![losses](https://github.com/msilver22/ECG_augmentation/blob/108e50ac4cc360075f2ee95480f902a183cf60e9/images/training_losses.png)
 
