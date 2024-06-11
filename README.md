@@ -25,4 +25,8 @@ We experiment GAN with several architecture for the generator/discriminator. The
 
 Here we represent the losses for the GAN and an example of generated ECG.
 
+![losses](https://github.com/msilver22/ECG_augmentation/blob/108e50ac4cc360075f2ee95480f902a183cf60e9/images/training_losses.png)
+
+![ecg](https://github.com/msilver22/ECG_augmentation/blob/108e50ac4cc360075f2ee95480f902a183cf60e9/images/gen_ecg.png)
+
 
